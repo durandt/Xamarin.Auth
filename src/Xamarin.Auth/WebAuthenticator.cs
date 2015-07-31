@@ -74,6 +74,18 @@ namespace Xamarin.Auth
 		public abstract Task<Uri> GetInitialUrlAsync ();
 
 		/// <summary>
+		/// Event handler called before a new page is being loaded in the web browser.
+		/// Gives the possibility to cancel a request.
+		/// </summary>
+		/// <param name='url'>
+		/// The URL of the page.
+		/// </param>
+		public virtual bool ShouldLoadPage (Uri url)
+		{
+			return true;
+		}
+
+		/// <summary>
 		/// Event handler called when a new page is being loaded in the web browser.
 		/// </summary>
 		/// <param name='url'>

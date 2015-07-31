@@ -159,20 +159,37 @@ namespace Xamarin.Auth
 
 			public override bool ShouldOverrideUrlLoading (WebView view, string url)
 			{
+				var uri = new Uri (url);
+				if (!activity.state.Authenticator.ShouldLoadPage(uri)) {
+					activity.state.Authenticator.OnPageLoaded(uri);
+					return true;
+				}
 				return false;
 			}
 
 			public override void OnPageStarted (WebView view, string url, Android.Graphics.Bitmap favicon)
 			{
 				var uri = new Uri (url);
-				activity.state.Authenticator.OnPageLoading (uri);
+				if (activity.state.Authenticator.ShouldLoadPage(uri)) {
+					// OnPageStarted will be called even if ShouldLoadPage returns false
+					// This if-statement makes OnPageLoading call consistent with iOS implementation
+					// Indeed, WebAuthenticatorController.WebViewDelegate.LoadStarted won't be called
+					// if ShouldLoadPage returns false.
+					activity.state.Authenticator.OnPageLoading(uri);
+				}
 				activity.BeginProgress (uri.Authority);
 			}
 
 			public override void OnPageFinished (WebView view, string url)
 			{
 				var uri = new Uri (url);
-				activity.state.Authenticator.OnPageLoaded (uri);
+				if (activity.state.Authenticator.ShouldLoadPage(uri)) {
+					// OnPageFinished will be called even if ShouldLoadPage returns false
+					// This if-statement makes OnPageLoaded call consistent with iOS implementation
+					// Indeed, WebAuthenticatorController.WebViewDelegate.LoadingFinished won't be called
+					// if ShouldLoadPage returns false.
+					activity.state.Authenticator.OnPageLoaded(uri);
+				}
 				activity.EndProgress ();
 			}
 

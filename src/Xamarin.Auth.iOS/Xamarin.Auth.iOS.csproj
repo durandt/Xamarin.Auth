@@ -105,5 +105,8 @@
     <Compile Include="..\Xamarin.Auth\Response.cs">
       <Link>Response.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Auth\ADFSOAuth2Authenticator.cs">
+      <Link>ADFSOAuth2Authenticator.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>

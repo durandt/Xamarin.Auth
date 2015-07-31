@@ -198,7 +198,12 @@ namespace Xamarin.Auth
 				if (nsUrl != null && !controller.authenticator.HasCompleted) {
 					Uri url;
 					if (Uri.TryCreate (nsUrl.AbsoluteString, UriKind.Absolute, out url)) {
-						controller.authenticator.OnPageLoading (url);
+						if (controller.authenticator.ShouldLoadPage(url)) {
+							controller.authenticator.OnPageLoading(url);
+						} else {
+							OnPageLoaded(url);
+							return false;
+						}
 					}
 				}
 
@@ -217,11 +222,24 @@ namespace Xamarin.Auth
 				if (error.Domain == "NSURLErrorDomain" && error.Code == -999)
 					return;
 
+				if (error.Domain == "WebKitErrorDomain" && error.Code == 102) {
+					// WebKitErrorDomain 102 happens when ShouldStartLoad returns false
+					// See:
+					// http://stackoverflow.com/questions/19959307/the-joys-of-didfailloadwitherror-uiwebview
+					return;
+				}
+
 				controller.activity.StopAnimating ();
 
 				webView.UserInteractionEnabled = true;
 
 				controller.authenticator.OnError (error.LocalizedDescription);
+			}
+
+			void OnPageLoaded(Uri url)
+			{
+				lastUrl = url;
+				controller.authenticator.OnPageLoaded(url);
 			}
 
 			public override void LoadingFinished (UIWebView webView)
@@ -232,8 +250,7 @@ namespace Xamarin.Auth
 
 				var url = new Uri (webView.Request.Url.AbsoluteString);
 				if (url != lastUrl && !controller.authenticator.HasCompleted) {
-					lastUrl = url;
-					controller.authenticator.OnPageLoaded (url);
+					OnPageLoaded(url);
 				}
 			}
 		}

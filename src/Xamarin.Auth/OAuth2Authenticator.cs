@@ -36,10 +36,10 @@ namespace Xamarin.Auth
 		string clientSecret;
 		string scope;
 		Uri authorizeUrl;
-		Uri accessTokenUrl;
+		protected Uri accessTokenUrl;
 		GetUsernameAsyncFunc getUsernameAsync;
 
-		string requestState;
+		protected string requestState;
 		bool reportedForgery = false;
 
 		/// <summary>
