@@ -102,6 +102,7 @@ namespace Xamarin.Auth
 
 				BeginLoadingInitialUrl ();
 			}
+			ActionBar.Hide();
 		}
 
 		void BeginLoadingInitialUrl ()
