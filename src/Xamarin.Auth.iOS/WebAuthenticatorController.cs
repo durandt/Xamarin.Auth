@@ -233,6 +233,8 @@ namespace Xamarin.Auth
 
 				webView.UserInteractionEnabled = true;
 
+				controller.keepTryingAfterError = false;
+
 				controller.authenticator.OnError (error.LocalizedDescription);
 			}
 
